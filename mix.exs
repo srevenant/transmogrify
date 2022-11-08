@@ -54,7 +54,7 @@ defmodule Transmogrify.MixProject do
       # These are the default files included in the package
       files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
                 license* CHANGELOG* changelog* src),
-      licenses: ["AGPL-3.0-only"],
+      licenses: ["AGPL-3.0-or-later"],
       links: %{"GitHub" => "https://github.com/srevenant/transmogrify"},
       source_url: "https://github.com/srevenant/transmogrify"
     ]
