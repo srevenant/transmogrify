@@ -13,6 +13,8 @@ defmodule Transmogrify.MixProject do
         main: "Transmogrify",
         extras: ["README.md"]
       ],
+      description: description(),
+      package: package(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
@@ -42,18 +44,13 @@ defmodule Transmogrify.MixProject do
 
   defp description() do
     """
-    Transform map/dictionary keys and values between atoms, strings, camelCase,
-    PascalCase, snake_case, and more.
+    Transform map/dictionary keys and values between atoms, strings, camelCase, PascalCase, snake_case, and more.
     """
   end
 
   defp package() do
     [
-      # This option is only needed when you don't want to use the OTP application name
-      name: "Transmogrify",
-      # These are the default files included in the package
-      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
-                license* CHANGELOG* changelog* src),
+      files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
       licenses: ["AGPL-3.0-or-later"],
       links: %{"GitHub" => "https://github.com/srevenant/transmogrify"},
       source_url: "https://github.com/srevenant/transmogrify"
