@@ -2,6 +2,12 @@ defmodule Transmogrify do
   @moduledoc """
   Accepts data with different shapes and changes them to an expected shape, such
   as switching keys in a map to camel case, or all string keys to atom keys, etc.
+
+  Three primary sections:
+
+  * [Transmogrifier](Transmogrify.Transmogrifier.html#transmogrify/2) — convert maps and list keys and values.
+  * [As](Transmogrify.As.html) — Simple data polymorphic conversions (as_atom/1) for example.
+  * Case and Path conversions (camelcase/snakecase, etc) — see below
   """
 
   @spec transmogrify(data :: map() | list(), opts :: map() | keyword()) ::

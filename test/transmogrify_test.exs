@@ -10,6 +10,7 @@ defmodule Transmogrify.Test do
   doctest Transmogrify.Modulename, import: true
   doctest Transmogrify.Pathname, import: true
   doctest Transmogrify.Transmogrifier, import: true
+  doctest Transmogrify.As, import: true
 
   test "Transmogrifier.convert_case/3" do
     assert convert_case("this_that", :preserve_type, &Camelcase.convert/1) == "thisThat"

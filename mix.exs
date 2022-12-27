@@ -4,17 +4,17 @@ defmodule Transmogrify.MixProject do
   def project do
     [
       app: :transmogrify,
-      version: "1.0.0",
+      version: "1.1.0",
       elixir: "~> 1.13",
-      start_permanent: Mix.env() == :prod,
+      description: description(),
       source_url: "https://github.com/srevenant/transmogrify",
-      deps: deps(),
       docs: [
         main: "Transmogrify",
         extras: ["README.md"]
       ],
-      description: description(),
       package: package(),
+      deps: deps(),
+      start_permanent: Mix.env() == :prod,
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
@@ -24,14 +24,12 @@ defmodule Transmogrify.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:mix_test_watch, "~> 0.8", only: [:test, :dev], runtime: false},

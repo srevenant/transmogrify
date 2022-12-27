@@ -35,6 +35,8 @@ defmodule Transmogrify.Modulename do
   "Module.Name.Here"
   iex> convert("module_9name.here")
   "Module9name.Here"
+  iex> convert(Module.Name)
+  "Module.Name"
   ```
 
   note: Original code from `Macro.camelize/1` with minor changes:
@@ -48,6 +50,8 @@ defmodule Transmogrify.Modulename do
   def convert(string)
 
   def convert(""), do: ""
+  def convert(x) when is_atom(x), do: convert(to_string(x))
+  def convert("Elixir." <> rest), do: do_convert(rest)
   def convert(<<?_, rest::binary>>), do: convert(rest)
   def convert(<<c1, rest::binary>>), do: <<Character.upper(c1)>> <> do_convert(rest)
 
