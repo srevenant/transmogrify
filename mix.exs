@@ -4,7 +4,7 @@ defmodule Transmogrify.MixProject do
   def project do
     [
       app: :transmogrify,
-      version: "1.1.0",
+      version: "1.1.1",
       elixir: "~> 1.13",
       description: description(),
       source_url: "https://github.com/srevenant/transmogrify",
@@ -49,7 +49,7 @@ defmodule Transmogrify.MixProject do
   defp package() do
     [
       files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
-      licenses: ["AGPL-3.0-or-later"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/srevenant/transmogrify"},
       source_url: "https://github.com/srevenant/transmogrify"
     ]
