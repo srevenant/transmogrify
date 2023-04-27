@@ -36,6 +36,7 @@ defmodule Transmogrify.Camelcase do
 
   # Original code from Macro module
   def convert(""), do: ""
+  def convert(key) when is_atom(key), do: convert(to_string(key))
   def convert(<<?_, rest::binary>>), do: convert(rest)
   def convert(value), do: do_convert(value)
 

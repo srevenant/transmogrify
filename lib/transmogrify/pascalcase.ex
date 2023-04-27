@@ -34,6 +34,7 @@ defmodule Transmogrify.Pascalcase do
   def convert(string)
 
   def convert(""), do: ""
+  def convert(key) when is_atom(key), do: convert(to_string(key))
   def convert(<<?_, rest::binary>>), do: convert(rest)
   def convert(<<c1, rest::binary>>), do: <<Character.upper(c1)>> <> do_convert(rest)
 

@@ -34,6 +34,7 @@ defmodule Transmogrify.Snakecase do
   ```
   """
   @spec convert(String.t()) :: String.t()
+  def convert(key) when is_atom(key), do: convert(to_string(key))
   def convert(<<?_, rest::binary>>), do: convert(rest)
   def convert(<<?-, rest::binary>>), do: convert(rest)
   def convert(<<ch, rest::binary>>), do: <<Character.lower(ch)>> <> do_convert(rest, ch)

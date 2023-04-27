@@ -307,4 +307,21 @@ defmodule Transmogrify.As do
       @invalid_error -> raise ArgumentError
     end
   end
+
+  @doc """
+  Accept atom or string.
+  If string, run through snakecase and convert to atom.
+  If atom, assume this is already done.
+
+  iex> as_key("thiskey")
+  :thiskey
+  iex> as_key("this key")
+  :"this key"
+  iex> as_key(:thisKey)
+  :thisKey
+  iex> as_key(:this_key)
+  :this_key
+  """
+  def as_key(key) when is_binary(key), do: Transmogrify.snakecase(key) |> String.to_atom()
+  def as_key(key) when is_atom(key), do: key
 end
