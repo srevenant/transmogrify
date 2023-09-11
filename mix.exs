@@ -4,7 +4,7 @@ defmodule Transmogrify.MixProject do
   def project do
     [
       app: :transmogrify,
-      version: "1.1.2",
+      version: "1.1.3",
       elixir: "~> 1.13",
       description: description(),
       source_url: "https://github.com/srevenant/transmogrify",
