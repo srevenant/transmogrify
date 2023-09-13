@@ -27,11 +27,13 @@ defmodule Transmogrify.Camelcase do
   "CamelCASE"
   iex> convert("CamelCase")
   "CamelCase"
+  iex> convert(:CamelCase)
+  "CamelCase"
   ```
   """
   # iex> convert("special camel case")
   # "special camel case"
-  @spec convert(String.t()) :: String.t()
+  @spec convert(String.t() | atom()) :: String.t()
   def convert(string)
 
   # Original code from Macro module
