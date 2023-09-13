@@ -8,9 +8,14 @@ defmodule Transmogrify.Transmogrifier do
     key_case: nil,
     value_case: nil,
     deep: true,
-    clean_nil: false,
-    clean_empty_list: false,
-    clean_empty_string: false
+    no_nil_value: false,
+    no_0list_value: false,
+    no_0map_value: false,
+    no_0string_value: false,
+    no_nil_elem: false,
+    no_0list_elem: false,
+    no_0map_elem: false,
+    no_0string_elem: false
   }
 
   @doc """
@@ -39,18 +44,27 @@ defmodule Transmogrify.Transmogrifier do
     - `:camel` — convert keys into `camelCase`
     - `:pascal` — convert keys into `PascalCase`
   * `deep:` `false` | `true` (default) — recurse full depth of maps/lists or not
-  * `clean_nil:` `false` (default) | `true` — remove list/map entry if value is nil
-  * `clean_empty_list:` `false` (default) | `true`  — remove list/map entry if zero-length list
-  * `clean_empty_string:` `false` (default) | `true` — remove list/map entry if zero-length string
+  * `no_{what}_{from}` — remove the specified {what} from the {from}, where
+    {what} is nil, or `0` and list, map, or string; and {from} is either value
+    (for maps) or elem (for lists).
+
+    - `no_nil_value:` `false` (default) | `true` — remove key/value from map if value is nil
+    - `no_0list_value:` `false` (default) | `true`  — remove key/value from map if value is a zero-length list
+    - `no_0map_value:` `false` (default) | `true`  — remove key/value from a map if value is an empty map
+    - `no_0string_value:` `false` (default) | `true` — remove key/value from a map if value is a zero-length string
+    - `no_nil_elem:` `false` (default) | `true` — remove element from list if elem is nil
+    - `no_0list_elem:` `false` (default) | `true`  — remove element from list if elem is a zero-length list
+    - `no_0map_elem:` `false` (default) | `true`  — remove element from a list if elem is an empty map
+    - `no_0string_elem:` `false` (default) | `true` — remove element from a list if elem is a zero-length string
 
   # Examples
 
   ```elixir
-  iex> transmogrify(%{"Tardis" => %{"Key" => 10}, "is" => 2, "The.Color" => "blue"}, key_convert: :atom)
-  %{Tardis: %{Key: 10}, is: 2, "The.Color": "blue"}
+  iex> transmogrify(%{"Tardis" => %{"Key1" => 10}, "is" => 2, "The.Color" => "blue"}, key_convert: :atom)
+  %{Tardis: %{Key1: 10}, is: 2, "The.Color": "blue"}
 
-  iex> transmogrify(%{"Tardis" => %{"Key" => 10}, "is" => 2, "The.Color" => "blue"}, key_convert: :atom, deep: false)
-  %{Tardis: %{"Key" => 10}, is: 2, "The.Color": "blue"}
+  iex> transmogrify(%{"Tardis" => %{"Key2" => 10}, "is" => 2, "The.Color" => "blue"}, key_convert: :atom, deep: false)
+  %{Tardis: %{"Key2" => 10}, is: 2, "The.Color": "blue"}
 
   iex> transmogrify(%{"Sonic" => 1, "ScrewDriver" => ":thIrd"}, key_convert: :atom, key_case: :snake, value_convert: :atom, value_case: :snake)
   %{sonic: 1, screw_driver: :th_ird}
@@ -62,28 +76,29 @@ defmodule Transmogrify.Transmogrifier do
   [%{ :thisCase => 1, "thatCase" => 2}]
 
   iex> transmogrify([
-  ...>     %{a: 1,
-  ...>       b: ["red", nil, "", [], ":green"],
-  ...>       c: [], d: nil, e: "",
-  ...>       f: %{TarVis: "blue"},
-  ...>       j: ":sonic"}
+  ...>     %{t1a: 1,
+  ...>       t1b: ["red", nil, "", [], ":green"],
+  ...>       t1c: [%{}], t1d: nil, t1e: "",
+  ...>       t1f: %{TarVis: "blue"},
+  ...>       t1j: ":sonic"}
   ...>   ],
   ...>   key_case: :snake, key_convert: :atom,
   ...>   value_case: :snake, value_convert: :none,
-  ...>   clean_nil: true, clean_empty_list: true, clean_empty_string: true
+  ...>   no_nil_value: true, no_0list_value: true, no_0string_value: true, no_0map_value: true,
+  ...>   no_nil_elem: true, no_0list_elem: true, no_0string_elem: true, no_0map_elem: true
   ...> )
-  [%{a: 1, b: ["red", ":green"], f: %{tar_vis: "blue"}, j: ":sonic"}]
+  [%{t1a: 1, t1b: ["red", ":green"], t1f: %{tar_vis: "blue"}, t1j: ":sonic"}]
 
   iex> transmogrify([
-  ...>     %{a: 1,
-  ...>       b: ["red", nil, "", [], ":green"],
-  ...>       c: [], d: nil, e: "",
-  ...>       f: %{TarDis: "blue"},
-  ...>       j: ":sonic"}, 10
+  ...>     %{t2a: 1,
+  ...>       t2b: ["red", nil, "", [], ":green"],
+  ...>       t2c: [], t2d: nil, t2e: "",
+  ...>       t2f: %{TarDis: "blue"},
+  ...>       t2j: ":sonic"}, 10
   ...>   ],
   ...>   value_convert: :semi_atom
   ...> )
-  [%{ a: 1, b: ["red", nil, "", [], :green], f: %{TarDis: "blue"}, j: :sonic, c: [], d: nil, e: ""}, 10]
+  [%{ t2a: 1, t2b: ["red", nil, "", [], :green], t2f: %{TarDis: "blue"}, t2j: :sonic, t2c: [], t2d: nil, t2e: ""}, 10]
 
   iex> transmogrify(%{key1: 10, keyTwo: "foo"}, key_convert: :string)
   %{"key1" => 10, "keyTwo" => "foo"}
@@ -99,43 +114,52 @@ defmodule Transmogrify.Transmogrifier do
   def transmogrify(map, opts) when is_map(opts),
     do: clean_data(map, Map.merge(@default_opts, opts))
 
-  defp clean_data(map, opts) when is_map(map) and not is_struct(map) do
-    Enum.reduce(map, [], fn {k, v}, a -> clean_key_value(k, v, a, opts) end) |> Map.new()
-  end
+  ##############################################################################
+  @doc """
+  Shortcut to clean out nulls, empty lists, and empty maps from a map
 
-  defp clean_data(list, opts) when is_list(list) do
-    Enum.reduce(list, [], fn value, accum -> clean_value(value, accum, opts) end)
-    |> Enum.reverse()
-  end
+  iex> prune(%{sub: %{}, keep: %{this: 1}, all: %{more: %{deeper: []}}})
+  %{keep: %{this: 1}}
+  """
+  def prune(d) when is_map(d),
+    do:
+      transmogrify(d, %{no_nil_value: true, no_0list_value: true, no_0map_value: true, deep: true})
+
+  ##############################################################################
+  defp clean_data(map, opts) when is_map(map) and not is_struct(map),
+    do: Enum.reduce(map, [], fn {k, v}, a -> clean_map_value(k, v, a, opts) end) |> Map.new()
+
+  defp clean_data(list, opts) when is_list(list),
+    do: Enum.reduce(list, [], fn v, a -> clean_elem(v, a, opts) end) |> Enum.reverse()
 
   defp clean_data(data, _), do: data
 
   ##############################################################################
-  defp clean_key_value(_, "", accum, %{clean_empty_string: true}), do: accum
-  defp clean_key_value(_, [], accum, %{clean_empty_list: true}), do: accum
-  defp clean_key_value(_, nil, accum, %{clean_nil: true}), do: accum
 
-  defp clean_key_value(key, value, accum, %{deep: true} = opts)
-       when is_map(value) or is_list(value),
-       do: [{clean_word(opts.key_case, opts.key_convert, key), clean_data(value, opts)} | accum]
+  defp clean_map_value(key, value, acc, %{deep: true} = opts)
+       when is_list(value) or is_map(value),
+       do: add_map_value(key, clean_data(value, opts), acc, opts)
 
-  defp clean_key_value(key, value, accum, opts),
-    do: [
-      {clean_word(opts.key_case, opts.key_convert, key),
-       clean_word(opts.value_case, opts.value_convert, value)}
-      | accum
-    ]
+  defp clean_map_value(key, value, acc, opts),
+    do: add_map_value(key, clean_word(opts.value_case, opts.value_convert, value), acc, opts)
+
+  defp add_map_value(_, "", a, %{no_0string_value: true}), do: a
+  defp add_map_value(_, [], a, %{no_0list_value: true}), do: a
+  defp add_map_value(_, nil, a, %{no_nil_value: true}), do: a
+  defp add_map_value(_, m, a, %{no_0map_value: true}) when is_map(m) and map_size(m) == 0, do: a
+  defp add_map_value(k, v, a, opts), do: [{clean_word(opts.key_case, opts.key_convert, k), v} | a]
 
   ##############################################################################
-  defp clean_value("", accum, %{clean_empty_string: true}), do: accum
-  defp clean_value([], accum, %{clean_empty_list: true}), do: accum
-  defp clean_value(nil, accum, %{clean_nil: true}), do: accum
+  defp clean_elem("", accum, %{no_0string_elem: true}), do: accum
+  defp clean_elem([], accum, %{no_0list_elem: true}), do: accum
+  defp clean_elem(nil, accum, %{no_nil_elem: true}), do: accum
+  defp clean_elem(m, accum, %{no_0map_elem: true}) when is_map(m) and map_size(m) == 0, do: accum
 
-  defp clean_value(value, accum, opts)
+  defp clean_elem(value, accum, opts)
        when (is_map(value) and not is_struct(value)) or is_list(value),
        do: [clean_data(value, opts) | accum]
 
-  defp clean_value(value, accum, opts),
+  defp clean_elem(value, accum, opts),
     do: [clean_word(opts.value_case, opts.value_convert, value) | accum]
 
   ##############################################################################
@@ -207,7 +231,7 @@ defmodule Transmogrify.Transmogrifier do
   def convert_case(word, :as_binary, convertor) when is_atom(word),
     do: convertor.(to_string(word))
 
-  def convert_case(word, _, convertor) when is_atom(word),
+  def convert_case(word, _, convertor) when is_atom(word) and not is_nil(word),
     do: convertor.(to_string(word)) |> String.to_atom()
 
   def convert_case(word, _, _), do: word

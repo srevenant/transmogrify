@@ -31,9 +31,11 @@ defmodule Transmogrify.Snakecase do
   "va_lue"
   iex> convert("_va___LUE")
   "va_lue"
+  iex> convert(:_va___LUE)
+  "va_lue"
   ```
   """
-  @spec convert(String.t()) :: String.t()
+  @spec convert(String.t() | atom()) :: String.t()
   def convert(key) when is_atom(key), do: convert(to_string(key))
   def convert(<<?_, rest::binary>>), do: convert(rest)
   def convert(<<?-, rest::binary>>), do: convert(rest)

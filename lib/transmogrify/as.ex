@@ -35,6 +35,7 @@ defmodule Transmogrify.As do
   """
   def as_int(arg) when is_integer(arg), do: {:ok, arg}
   def as_int(arg) when is_float(arg), do: {:ok, Kernel.trunc(arg)}
+
   def as_int(arg) when is_binary(arg) do
     {:ok, String.to_integer(arg)}
   rescue
@@ -82,7 +83,11 @@ defmodule Transmogrify.As do
   {:ok, 10.5}
   iex> as_float(".55")
   {:ok, 0.55}
+  iex> as_float(".#")
+  :error
   iex> as_float("tardis")
+  :error
+  iex> as_float({})
   :error
   ```
   """
@@ -140,12 +145,15 @@ defmodule Transmogrify.As do
   {:ok, 10.5}
   iex> as_number(".55")
   {:ok, 0.55}
+  iex> as_number(".#")
+  :error
   iex> as_number("tardis")
+  :error
+  iex> as_number({})
   :error
   ```
   """
   def as_number(arg) when is_number(arg), do: {:ok, arg}
-  def as_number(arg) when is_integer(arg), do: {:ok, arg / 1}
 
   def as_number(<<?., data::binary>>) do
     {:ok, String.to_float("0.#{data}")}
@@ -263,14 +271,18 @@ defmodule Transmogrify.As do
   {:ok, [:as_existing_atom, :another]}
   iex> as_existing_atom(:atom)
   {:ok, :atom}
+  iex> as_existing_atom('test')
+  {:ok, :test}
   ```
   """
   def as_existing_atom(key) when is_atom(key), do: {:ok, key}
+
   def as_existing_atom(str) when is_binary(str) do
     {:ok, String.to_existing_atom(str)}
   rescue
     ArgumentError -> @invalid_error
   end
+
   # if first elem is an int, assume charlist...
   def as_existing_atom([x | _] = list) when is_integer(x), do: as_existing_atom(to_string(list))
   def as_existing_atom(list) when is_list(list), do: {:ok, Enum.map(list, &as_existing_atom!/1)}
@@ -324,4 +336,54 @@ defmodule Transmogrify.As do
   """
   def as_key(key) when is_binary(key), do: Transmogrify.snakecase(key) |> String.to_atom()
   def as_key(key) when is_atom(key), do: key
+
+  @doc """
+
+  iex> as_kvstr(%{a: "b", c: "10", d: "longer with space", x: :c.pid(0, 999, 999), y: Module, z: nil})
+  "c=10 a=b d=\\"longer with space\\" y=Module x=<0.999.999> z="
+  """
+  def as_kvstr(map) do
+    Enum.map_join(map, " ", fn {k, v} ->
+      [any_to_string(k), "=", any_to_string(v)]
+    end)
+  end
+
+  defp json_safe_string(str) when is_binary(str) do
+    if String.contains?(str, " ") or String.contains?(str, "\"") do
+      "#{inspect(str)}"
+    else
+      to_string(str)
+    end
+  end
+
+  # TODO:  how much of this is still needed today?
+  defp any_to_string(pid) when is_pid(pid) do
+    :erlang.pid_to_list(pid)
+    |> to_string()
+    |> json_safe_string
+  end
+
+  defp any_to_string(ref) when is_reference(ref) do
+    ~c"#Ref" ++ rest = :erlang.ref_to_list(ref)
+
+    to_string(rest)
+    |> json_safe_string
+  end
+
+  defp any_to_string(str) when is_binary(str) do
+    json_safe_string(str)
+  end
+
+  defp any_to_string(atom) when is_atom(atom) do
+    case Atom.to_string(atom) do
+      "Elixir." <> rest -> rest
+      "nil" -> ""
+      binary -> binary
+    end
+    |> json_safe_string
+  end
+
+  defp any_to_string(other) do
+    any_to_string(Kernel.inspect(other))
+  end
 end
