@@ -6,7 +6,8 @@ defmodule Transmogrify do
   Three primary sections:
 
   * [Transmogrifier](Transmogrify.Transmogrifier.html#transmogrify/2) — convert maps and list keys and values.
-  * [As](Transmogrify.As.html) — Simple data polymorphic conversions (as_atom/1) for example.
+  * [As](Transmogrify.As.html) — Direct data polymorphic conversions (as_atom/1),
+    which accepts a variety of data types and makes them become the desired type.
   * Case and Path conversions (camelcase/snakecase, etc) — see below
   """
 

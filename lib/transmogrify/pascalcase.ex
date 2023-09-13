@@ -28,9 +28,11 @@ defmodule Transmogrify.Pascalcase do
   "PascalCase"
   iex> convert("pascal_9case")
   "Pascal9case"
+  iex> convert(:pascal_9case)
+  "Pascal9case"
   ```
   """
-  @spec convert(String.t()) :: String.t()
+  @spec convert(String.t() | atom()) :: String.t()
   def convert(string)
 
   def convert(""), do: ""
