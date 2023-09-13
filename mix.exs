@@ -4,7 +4,7 @@ defmodule Transmogrify.MixProject do
   def project do
     [
       app: :transmogrify,
-      version: "1.1.2",
+      version: "1.1.3",
       elixir: "~> 1.13",
       description: description(),
       source_url: "https://github.com/srevenant/transmogrify",
@@ -33,11 +33,11 @@ defmodule Transmogrify.MixProject do
 
   defp deps do
     [
-      {:mix_test_watch, "~> 0.8", only: [:test, :dev], runtime: false},
-      {:excoveralls, "~> 0.14", only: :test},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
+      {:excoveralls, "~> 0.14", only: :test},
+      {:mix_test_watch, "~> 1.0", only: [:test, :dev], runtime: false}
     ]
   end
 
