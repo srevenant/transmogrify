@@ -261,7 +261,7 @@ defmodule Transmogrify.As do
   ```elixir
   iex> as_existing_atom("long ugly thing prolly")
   {:ok, :"long ugly thing prolly"}
-  iex> as_existing_atom("non_existing_atom")
+  iex> as_existing_atom("non_existing_atom_first")
   :error
   iex> as_existing_atom("as_existing_atom")
   {:ok, :as_existing_atom}
@@ -309,7 +309,7 @@ defmodule Transmogrify.As do
   iex> as_existing_atom!({:oops})
   ** (ArgumentError) argument error
 
-  iex> as_existing_atom!("non_existing_atom")
+  iex> as_existing_atom!("non_existing_atom_again")
   ** (ArgumentError) argument error
   ```
   """
@@ -323,19 +323,22 @@ defmodule Transmogrify.As do
   @doc """
   Accept atom or string.
   If string, run through snakecase and convert to atom.
-  If atom, assume this is already done.
 
   iex> as_key("thiskey")
   :thiskey
   iex> as_key("this key")
   :"this key"
   iex> as_key(:thisKey)
-  :thisKey
+  :this_key
   iex> as_key(:this_key)
   :this_key
+
+  iex> as_existing_key("non_existing_atom_deux")
+  ** (ArgumentError) argument error
   """
-  def as_key(key) when is_binary(key), do: Transmogrify.snakecase(key) |> String.to_atom()
-  def as_key(key) when is_atom(key), do: key
+  def as_key(key), do: Transmogrify.snakecase(key) |> String.to_atom()
+
+  def as_existing_key(key), do: Transmogrify.snakecase(key) |> as_existing_atom!()
 
   @doc """
 

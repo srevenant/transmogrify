@@ -64,29 +64,4 @@ defmodule Transmogrify.Snakecase do
   defp do_convert(<<>>, _) do
     <<>>
   end
-
-  @doc """
-  Convert pascal, dashed etc to a snake_case name as an atom.
-
-  iex> snake_atom(:value)
-  {:ok, :value}
-  iex> snake_atom(:Value)
-  {:ok, :value}
-  iex> snake_atom("valueCamelToSnake")
-  {:ok, :value_camel_to_snake}
-  iex> snake_atom(:"value-dashed")
-  {:ok, :value_dashed}
-  iex> snake_atom("Value-Dashed")
-  {:ok, :value_dashed}
-  iex> snake_atom!("Value-Dashed")
-  :value_dashed
-  iex> snake_existing_atom("Value-Dashed")
-  {:ok, :value_dashed}
-  iex> snake_existing_atom!("Value-Dashed")
-  :value_dashed
-  """
-  def snake_atom!(input), do: convert(input) |> as_atom!()
-  def snake_existing_atom!(input), do: convert(input) |> as_existing_atom!()
-  def snake_atom(input), do: convert(input) |> as_atom()
-  def snake_existing_atom(input), do: convert(input) |> as_existing_atom()
 end
