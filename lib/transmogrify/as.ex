@@ -324,21 +324,26 @@ defmodule Transmogrify.As do
   Accept atom or string.
   If string, run through snakecase and convert to atom.
 
-  iex> as_key("thiskey")
+  iex> as_key!("thiskey")
   :thiskey
-  iex> as_key("this key")
+  iex> as_key!("this key")
   :"this key"
-  iex> as_key(:thisKey)
+  iex> as_key!(:thisKey)
   :this_key
-  iex> as_key(:this_key)
+  iex> as_key!(:this_key)
   :this_key
-
-  iex> as_existing_key("non_existing_atom_deux")
+  iex> as_existing_key!("non_existing_atom_deux")
   ** (ArgumentError) argument error
+  iex> as_key(:this_key)
+  {:ok, :this_key}
+  iex> as_existing_key(:this_key)
+  {:ok, :this_key}
   """
-  def as_key(key), do: Transmogrify.snakecase(key) |> String.to_atom()
+  def as_key(key), do: Transmogrify.snakecase(key) |> as_atom()
+  def as_existing_key(key), do: Transmogrify.snakecase(key) |> as_existing_atom()
 
-  def as_existing_key(key), do: Transmogrify.snakecase(key) |> as_existing_atom!()
+  def as_key!(key), do: Transmogrify.snakecase(key) |> as_atom!()
+  def as_existing_key!(key), do: Transmogrify.snakecase(key) |> as_existing_atom!()
 
   @doc """
 

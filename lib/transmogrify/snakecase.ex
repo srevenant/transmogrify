@@ -1,7 +1,6 @@
 defmodule Transmogrify.Snakecase do
   @moduledoc "Convert strings to snake_case"
   alias Transmogrify.Character
-  import Transmogrify.As
 
   @doc """
   Convert a string to `snake_case`, usually when originally `PascalCase` or
